@@ -61,7 +61,7 @@ hierarchy of values
 Game Table filters all values by a game and has a certain time to live
 before it is deleted
 - CreateGame(TimeToLive) : GameToken
-- SetGameValue( SToken GameToken, Key)
+- SetGameValue( SToken, GameToken, Key)
 - etc.
 
 
