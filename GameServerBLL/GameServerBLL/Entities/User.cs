@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
-//using System.Data.Entity;
-//using System.Data.Entity.ModelConfiguration.Conventions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameServerBLL.Entities
 {
@@ -15,7 +13,7 @@ namespace GameServerBLL.Entities
         [Key()] // Primary key 
         public int UserID { get; set; }
 
-        //[Index(IsUnique = true)] 
+        [Index(IsUnique = true)] 
         public string Email { get; set; }
         public string EncodedPassword { get; set; }
         public bool IsVerified { get; set; }
