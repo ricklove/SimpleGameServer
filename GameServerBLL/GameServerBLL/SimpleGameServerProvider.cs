@@ -13,17 +13,25 @@ namespace GameServerBLL
         {
         }
 
-        public static SimpleGameServerProvider Instance { get { return Providers.instance; } }
+        public static SimpleGameServerProvider Instance 
+        { 
+            get 
+            { 
+                return Providers.instance; 
+            } 
+        }
 
+        // Nested class
         private static class Providers
         {
             static Providers()
             {
             }
 
-            // It is a static property point to the static instance of the server provider
+            // It is a static property that points to the static instance of the server provider
             internal static readonly SimpleGameServerProvider instance = new SimpleGameServerProvider();
         }
+
 
         // ISimpleGameServer Interface Methods
 
@@ -35,7 +43,6 @@ namespace GameServerBLL
         public void Verify(string email)
         {
         }
-
 
         public Guid Login(string email, string password) // Returns ClientToken
         {
