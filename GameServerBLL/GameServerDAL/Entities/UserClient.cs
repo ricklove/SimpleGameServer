@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 
 
-namespace GameServerBLL.Entities
+namespace GameServerDAL.Entities
 {
     public class UserClient
     {

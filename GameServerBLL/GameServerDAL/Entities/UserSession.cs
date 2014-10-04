@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace GameServerBLL.Entities
+namespace GameServerDAL.Entities
 {
     public class UserSession
     {

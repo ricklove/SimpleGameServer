@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
-using GameServerBLL.Entities;
+using GameServerDAL.Entities;
 
-namespace GameServerBLL.GameServerContext
+namespace GameServerDAL
 {
     public class GameServerContext : DbContext 
     {
