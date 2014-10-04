@@ -9,9 +9,9 @@ namespace GameServerBLL
     interface ISimpleGameServer
     {
         // Login Methods
-        void Register(string email, string password);
-        void Verify(string email);
-        Guid Login(string email, string password); // Returns ClientToken
+        bool Register(string email, string password);
+        bool Verify(string email);
+        Guid Login(string email, string password, out bool isSuccess); // Returns ClientToken
         Guid CreateSession(Guid ClientToken); // Returns sessionToken
     }
 }

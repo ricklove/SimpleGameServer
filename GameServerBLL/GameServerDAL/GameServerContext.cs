@@ -10,6 +10,21 @@ namespace GameServerDAL
 {
     public class GameServerContext : DbContext 
     {
+        private static GameServerContext instance;
+        private GameServerContext() { }
+
+        public static GameServerContext Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new GameServerContext();
+                }
+                return instance;
+            }
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<UserClient> UserClients { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
