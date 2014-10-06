@@ -5,17 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using GameServerBLL;
 
+////////////////////////////////////////////////
+
+// Developer : Faqir Aamir
+// Email     : faamirpk@yahoo.com
+// skype     : faqir.aamir
+
+////////////////////////////////////////////////
+
 namespace TestAppConsole
 {
     public class Tester
     {
         static void Main(string[] args)
         {
-            EntityData ed = new EntityData();
-            ed.DeleteDB();
-            ed.AddTestData();
+            EntityModeler em = new EntityModeler();
+            em.DeleteDB();
+            em.AddTestData();
 
-            List<string> usersEmail = ed.ShowUsers();
+            List<string> usersEmail = em.ShowUsers();
 
             Console.WriteLine("All users emails in the database:");
             foreach (var item in usersEmail)
@@ -30,8 +38,8 @@ namespace TestAppConsole
             bool IsSuccess;
             provider.Login("faamirpk@yahoo.com", "pass1", out IsSuccess);
 
-            ed.DeleteDB();
-            ed.Dispose();
+            em.DeleteDB();
+            em.Dispose();
         }
     }
 }
