@@ -20,7 +20,7 @@ namespace TestAppConsole
         static void Main(string[] args)
         {
             EntityModeler em = new EntityModeler();
-            //em.DeleteDB();
+            em.DelteAllData();
             em.AddTestData();
 
             List<string> usersEmail = em.ShowUsers();

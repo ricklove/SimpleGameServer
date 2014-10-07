@@ -59,9 +59,13 @@ namespace GameServerBLL
             return usersEmail;
         }
 
-        public void Register()
+        public void DelteAllData()
         {
+            db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
+            db.UserClients.RemoveRange(db.UserClients.Select(s => s));
+            db.Users.RemoveRange(db.Users.Select(s => s));
 
+            db.SaveChanges();
         }
 
         public void DeleteDB()
