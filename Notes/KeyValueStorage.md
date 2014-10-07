@@ -1,5 +1,7 @@
 Efficient key storage and lookups
 
+The code in this document is pseudocode and indicates the intention, not the correct implementation.
+
 
 ## Flat Table - Adjacency List with Depth (Rank is not needed)
 
@@ -116,6 +118,10 @@ Combine all results into json:
 ---
 
 # References
+
+Get only newest row:
+
+- http://stackoverflow.com/questions/17327043/how-can-i-select-rows-with-most-recent-timestamp-for-each-key-value
 
 A good overview of the options available for hierarchical data
 
