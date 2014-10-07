@@ -8,22 +8,24 @@ using GameServerDAL.Entities;
 
 namespace GameServerBLL
 {
-    public class EntityData : IDisposable
+    public class EntityModeler : IDisposable
     {
         bool is_disposed = false;
         private GameServerContext db;
+        private Encoder encoder;
 
-        public EntityData()
+        public EntityModeler()
         {
             db = GameServerContext.Instance;
+            encoder = new Encoder();
         }
 
         public void AddTestData()
         {
-            var user1 = new User { UserID = 1, Email = "faamirpk@yahoo.com", EncodedPassword = Util.ComputeHash("pass1", "SHA512", null), IsVerified = true };
-            var user2 = new User { UserID = 2, Email = "test2222@yahoo.com", EncodedPassword = Util.ComputeHash("pass2", "SHA512", null), IsVerified = true };
-            var user3 = new User { UserID = 3, Email = "test3333@yahoo.com", EncodedPassword = Util.ComputeHash("pass3", "SHA512", null), IsVerified = true };
-            var user4 = new User { UserID = 4, Email = "test4444@yahoo.com", EncodedPassword = Util.ComputeHash("pass4", "SHA512", null), IsVerified = true };
+            var user1 = new User { UserID = 1, Email = "faamirpk@yahoo.com", EncodedPassword = encoder.EncodePassword("pass1", "SHA512", null), IsVerified = true };
+            var user2 = new User { UserID = 2, Email = "test2222@yahoo.com", EncodedPassword = encoder.EncodePassword("pass2", "SHA512", null), IsVerified = true };
+            var user3 = new User { UserID = 3, Email = "test3333@yahoo.com", EncodedPassword = encoder.EncodePassword("pass3", "SHA512", null), IsVerified = true };
+            var user4 = new User { UserID = 4, Email = "test4444@yahoo.com", EncodedPassword = encoder.EncodePassword("pass4", "SHA512", null), IsVerified = true };
 
             db.Users.Add(user1);
             db.Users.Add(user2);
@@ -57,9 +59,13 @@ namespace GameServerBLL
             return usersEmail;
         }
 
-        public void Register()
+        public void DelteAllData()
         {
+            db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
+            db.UserClients.RemoveRange(db.UserClients.Select(s => s));
+            db.Users.RemoveRange(db.Users.Select(s => s));
 
+            db.SaveChanges();
         }
 
         public void DeleteDB()
@@ -85,7 +91,7 @@ namespace GameServerBLL
             GC.SuppressFinalize(this);
         }
 
-        ~EntityData()
+        ~EntityModeler()
         {
             Dispose(false);
         }
