@@ -17,6 +17,7 @@ namespace GameServerBLL
         public EntityModeler()
         {
             db = GameServerContext.Instance;
+            encoder = new Encoder();
         }
 
         public void AddTestData()

@@ -18,6 +18,8 @@ namespace GameServerBLL
         private SimpleGameServerProvider()
         {
             db = GameServerContext.Instance;
+            encoder = new Encoder();
+            mailer = new Mailer();
         }
         
         public static SimpleGameServerProvider Instance 

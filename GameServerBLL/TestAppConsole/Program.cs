@@ -20,7 +20,7 @@ namespace TestAppConsole
         static void Main(string[] args)
         {
             EntityModeler em = new EntityModeler();
-            em.DeleteDB();
+            //em.DeleteDB();
             em.AddTestData();
 
             List<string> usersEmail = em.ShowUsers();
@@ -38,7 +38,7 @@ namespace TestAppConsole
             bool IsSuccess;
             provider.Login("faamirpk@yahoo.com", "pass1", out IsSuccess);
 
-            em.DeleteDB();
+            //em.DeleteDB();
             em.Dispose();
         }
     }
