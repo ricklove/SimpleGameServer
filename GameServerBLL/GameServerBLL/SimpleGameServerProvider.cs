@@ -72,7 +72,7 @@ namespace GameServerBLL
         {
             User user = (from u in db.Users
                          where u.Email.Equals(email) 
-                         select u).FirstOrDefault();
+                         select u).SingleOrDefault();
 
             if (user != null)
             {
@@ -88,7 +88,7 @@ namespace GameServerBLL
             User user = (from u in db.Users
                          where u.Email.Equals(email) //&&
                          //u.EncodedPassword.Equals(UserSecurity.GetPasswordHash(username, password))
-                         select u).FirstOrDefault();
+                         select u).SingleOrDefault();
 
             if ((user == null) || (!(encoder.VerifyHash(password, "SHA512", user.EncodedPassword))))
             {
@@ -120,7 +120,7 @@ namespace GameServerBLL
         {
             UserClient userClient = (from uc in db.UserClients
                                      where uc.UserClientToken == ClientToken
-                                     select uc).FirstOrDefault();
+                                     select uc).SingleOrDefault();
 
             if (userClient == null)
                 return Guid.Empty;
@@ -133,7 +133,17 @@ namespace GameServerBLL
             db.SaveChanges();
 
             return userSessionToken;
-        } 
+        }
+
+        public void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value)
+        {
+
+        }
+
+        public string GetValue(Guid sessionToken, KeyValueScope scope, string key)
+        {
+            return String.Empty;
+        }
 
         #endregion
 

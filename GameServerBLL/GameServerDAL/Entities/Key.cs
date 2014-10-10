@@ -7,14 +7,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameServerDAL.Entities
 {
-    public class UserClient
+    class Key
     {
         [Key()] // Primary key 
-        public Guid UserClientToken { get; set; }
-        // Foreign key 
-        public int UserID { get; set; }
+        public int KeyID { get; set; }
+        public int ParentID { get; set; } // //Null or KeyID must exist
+        public int Depth { get; set; }
+        public string Name { get; set; }
 
         // Navigation property 
-        public virtual User User { get; set; } 
+        //.
+        //.
+        //.
     }
 }

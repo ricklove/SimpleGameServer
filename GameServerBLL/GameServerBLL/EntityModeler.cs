@@ -61,9 +61,10 @@ namespace GameServerBLL
 
         public void DelteAllData()
         {
-            db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
-            db.UserClients.RemoveRange(db.UserClients.Select(s => s));
-            db.Users.RemoveRange(db.Users.Select(s => s));
+            //db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
+            db.UserSessions.RemoveRange(db.UserSessions);
+            db.UserClients.RemoveRange(db.UserClients);
+            db.Users.RemoveRange(db.Users);
 
             db.SaveChanges();
         }

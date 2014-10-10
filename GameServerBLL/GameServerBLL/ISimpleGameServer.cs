@@ -13,5 +13,13 @@ namespace GameServerBLL
         bool Verify(string email);
         Guid Login(string email, string password, out bool isSuccess); // Returns ClientToken
         Guid CreateSession(Guid ClientToken); // Returns sessionToken
+        void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value);
+        string GetValue(Guid sessionToken, KeyValueScope scope, string key);
+    }
+
+    public enum KeyValueScope
+    {
+        User,
+        Shared
     }
 }
