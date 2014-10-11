@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameServerDAL.Entities
 {
-    class Key
+    public class Key
     {
         [Key()] // Primary key 
         public int KeyID { get; set; }

@@ -7,14 +7,25 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameServerDAL.Entities
 {
-    class Value
+
+    public enum KeyValueScope
+    {
+
+        User,
+        Shared
+    }
+
+    public class Value
     {
         [Key()] // Primary key 
         public int ValueID { get; set; }
         public int KeyID { get; set; }
-        public int Scope { get; set; }
+        public KeyValueScope Scope { get; set; }
         public string Val { get; set; }
         public int SetByUserID { get; set; }
         public DateTime SetAtTime { get; set; } // Timestamp
+
+        // Navigation property 
+        public virtual Key Key { get; set; } 
     }
 }
