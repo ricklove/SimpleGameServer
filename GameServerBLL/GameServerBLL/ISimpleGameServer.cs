@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameServerDAL.Entities;
 
 namespace GameServerBLL
 {
@@ -15,11 +16,5 @@ namespace GameServerBLL
         Guid CreateSession(Guid ClientToken); // Returns sessionToken
         void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value);
         string GetValue(Guid sessionToken, KeyValueScope scope, string key);
-    }
-
-    public enum KeyValueScope
-    {
-        User,
-        Shared
     }
 }

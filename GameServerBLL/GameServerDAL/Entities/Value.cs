@@ -10,7 +10,6 @@ namespace GameServerDAL.Entities
 
     public enum KeyValueScope
     {
-
         User,
         Shared
     }

@@ -11,13 +11,9 @@ namespace GameServerDAL.Entities
     {
         [Key()] // Primary key 
         public int KeyID { get; set; }
-        public int ParentID { get; set; } // //Null or KeyID must exist
+        [Required()]
+        public int? ParentID { get; set; } // //Null or KeyID must exist
         public int Depth { get; set; }
         public string Name { get; set; }
-
-        // Navigation property 
-        //.
-        //.
-        //.
     }
 }
