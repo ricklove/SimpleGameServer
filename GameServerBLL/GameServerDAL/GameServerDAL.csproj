@@ -46,9 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Key.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\UserClient.cs" />
     <Compile Include="Entities\UserSession.cs" />
+    <Compile Include="Entities\Value.cs" />
     <Compile Include="GameServerContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

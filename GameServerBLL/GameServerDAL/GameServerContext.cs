@@ -29,6 +29,9 @@ namespace GameServerDAL
         public DbSet<UserClient> UserClients { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
 
+        public DbSet<Key> Keys { get; set; }
+        public DbSet<Value> Values { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Map one-to-zero relationship 
@@ -38,6 +41,10 @@ namespace GameServerDAL
             // Map one-to-zero relationship 
             modelBuilder.Entity<UserSession>()
                 .HasRequired(t => t.UserClient);
+
+            // Map one-to-zero relationship 
+            modelBuilder.Entity<Value>()
+                .HasRequired(t => t.Key);
         } 
     }
 }

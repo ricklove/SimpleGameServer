@@ -8,21 +8,25 @@ using GameServerDAL.Entities;
 
 namespace GameServerBLL
 {
-    // This class act as the main access point for the business logic
+    // This class acts as the main access point for the business logic
     public sealed class SimpleGameServerProvider : ISimpleGameServer
     {
         private GameServerContext db;
+        private Encoder encoder;
+        private Mailer mailer;
 
         private SimpleGameServerProvider()
         {
             db = GameServerContext.Instance;
+            encoder = new Encoder();
+            mailer = new Mailer();
         }
         
         public static SimpleGameServerProvider Instance 
         { 
             get 
-            { 
-                return Providers.instance; 
+            {
+                return Providers.SimpleGameServer; 
             } 
         }
 
@@ -34,14 +38,14 @@ namespace GameServerBLL
             }
 
             // It is a static property that points to the static instance of the server provider
-            internal static readonly SimpleGameServerProvider instance = new SimpleGameServerProvider();
+            internal static readonly SimpleGameServerProvider SimpleGameServer = new SimpleGameServerProvider();
         }
 
 
-        // ISimpleGameServer Interface Methods
+        #region ISimpleGameServer Interface Methods
 
         // Login Methods
-        public bool Register(string email, string password) 
+        public bool Register(string email, string password)
         {
             Util util = new Util();
             if (!(util.IsValidEmail(email)))
@@ -55,49 +59,93 @@ namespace GameServerBLL
             if (emails.Contains(email))
                 return false;
 
-            var user = new User { UserID = 1, Email = email, EncodedPassword = password, IsVerified = true };
+            var user = new User { UserID = 1, Email = email, EncodedPassword = encoder.EncodePassword(password, "SHA512", null), IsVerified = false };
             db.Users.Add(user);
             db.SaveChanges();
+
+            mailer.SendVerificationEmail(email);
 
             return true;
         }
 
         public bool Verify(string email)
         {
-            return false;
+            User user = (from u in db.Users
+                         where u.Email.Equals(email) 
+                         select u).SingleOrDefault();
+
+            if (user != null)
+            {
+                user.IsVerified = true;
+                return true;
+            }
+            else
+                return false;
         }
 
-        public Guid Login(string email, string password, out bool isSuccess) // Returns ClientToken
+        public Guid Login(string email, string password, out bool isSuccess)
         {
             User user = (from u in db.Users
                          where u.Email.Equals(email) //&&
-                            //u.EncodedPassword.Equals(UserSecurity.GetPasswordHash(username, password))
-                         select u).FirstOrDefault();
+                         //u.EncodedPassword.Equals(UserSecurity.GetPasswordHash(username, password))
+                         select u).SingleOrDefault();
 
-            if ( (user == null) || (!(Util.VerifyHash(password, "SHA512", user.EncodedPassword))) )
+            if ((user == null) || (!(encoder.VerifyHash(password, "SHA512", user.EncodedPassword))))
             {
                 // Invalid user name or password
                 isSuccess = false;
-                return Guid.NewGuid();
+                return Guid.Empty;
             }
             else if (!(user.IsVerified))
             {
                 // User not verified
                 isSuccess = false;
-                return Guid.NewGuid();
+                return Guid.Empty;
             }
             else
             {
                 //success
+                Guid userClientToken = Guid.NewGuid();
+
+                var userClient = new UserClient { UserClientToken = userClientToken, UserID = user.UserID };
+                db.UserClients.Add(userClient);
+                db.SaveChanges();
+
                 isSuccess = true;
-                return Guid.NewGuid();
+                return userClientToken;
             }
         }
 
-        public Guid CreateSession(Guid ClientToken) // Returns sessionToken
+        public Guid CreateSession(Guid ClientToken)
         {
-            return new Guid();
+            UserClient userClient = (from uc in db.UserClients
+                                     where uc.UserClientToken == ClientToken
+                                     select uc).SingleOrDefault();
+
+            if (userClient == null)
+                return Guid.Empty;
+
+            //success
+            Guid userSessionToken = Guid.NewGuid();
+
+            var userSession = new UserSession { UserSessionToken = userSessionToken, UserClientToken = ClientToken, UserID = userClient.UserID };
+            db.UserSessions.Add(userSession);
+            db.SaveChanges();
+
+            return userSessionToken;
         }
+
+        public void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value)
+        {
+
+        }
+
+        public string GetValue(Guid sessionToken, KeyValueScope scope, string key)
+        {
+            return String.Empty;
+        }
+
+        #endregion
 
         private IQueryable<string> AllUsersEmail()
         {
