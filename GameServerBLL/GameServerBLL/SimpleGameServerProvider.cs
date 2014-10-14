@@ -9,8 +9,9 @@ using GameServerDAL.Entities;
 namespace GameServerBLL
 {
     // This class acts as the main access point for the business logic
-    public sealed class SimpleGameServerProvider : ISimpleGameServer
+    public sealed class SimpleGameServerProvider : ISimpleGameServer, IDisposable
     {
+        bool is_disposed = false;
         private GameServerContext db;
         private Encoder encoder;
         private Mailer mailer;
@@ -212,6 +213,35 @@ namespace GameServerBLL
 
             var valueRow = new Value { /*ValueID is identity_val*/ KeyID = valueRow_KeyID, Scope = valueRow_Scope, Val = valueRow_Value, SetByUserID = valueRow_SetByUserID, SetAtTime = valueRow_SetAtTime };
             db.Values.Add(valueRow);
+        }
+
+        public void BuildCache()
+        {
+            Cache cache = Cache.Instance;
+            cache.Initialize(db.Keys, db.Values);
+        }
+    
+        private void Dispose(bool disposing)
+        {
+            if (!is_disposed)
+            {
+                if (disposing)
+                {
+                }
+                this.db.Dispose();
+            }
+            this.is_disposed = true;
+        }
+  
+        public void Dispose( )
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~SimpleGameServerProvider()
+        {
+            Dispose(false);
         }
     }
 }

@@ -61,8 +61,21 @@ namespace TestAppConsole
                 string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key);
 
                 Console.WriteLine("key : ( {0} ) ----- Value : {1}", key, value);
+
+                // Test to look Up using Full key
+                provider.BuildCache();
+
+                string fullKey = "TOLD.MyGame.HighScores.1.PlayerID";
+                int hashCodeFullKey = em.GetHashForFullKey(fullKey);
+
+                em.FindKeyForHash(hashCodeFullKey);
+
+
+
+                Console.ReadLine();
             }
 
+            provider.Dispose();
             em.Dispose();
         }
     }

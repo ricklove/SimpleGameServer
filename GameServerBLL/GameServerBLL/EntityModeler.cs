@@ -154,6 +154,19 @@ namespace GameServerBLL
             db.Database.Delete();
         }
 
+        public int GetHashForFullKey(string fullKey)
+        {
+            return fullKey.GetHashCode();
+        }
+
+        public void FindKeyForHash(int hashCode)
+        {
+            Cache cache = Cache.Instance;
+            cache.Initialize(db.Keys, db.Values);
+
+            cache.FindKeyForHash(hashCode);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!is_disposed)
@@ -165,7 +178,7 @@ namespace GameServerBLL
             }
             this.is_disposed = true;
         }
-  
+
         public void Dispose( )
         {
             Dispose(true);
