@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameServerDAL.Entities
 {
@@ -16,7 +17,7 @@ namespace GameServerDAL.Entities
 
     public class Value
     {
-        [Key()] // Primary key 
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Primary key 
         public int ValueID { get; set; }
         public int KeyID { get; set; }
         public KeyValueScope Scope { get; set; }

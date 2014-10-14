@@ -93,18 +93,18 @@ namespace GameServerBLL
             db.Keys.Add(key19);
 
             // value table
-            var value1 = new Value { ValueID = 100, KeyID = 10000, Scope = KeyValueScope.Shared, Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
-            var value2 = new Value { ValueID = 101, KeyID = 10001, Scope = KeyValueScope.Shared, Val = "9500", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
+            var value1 = new Value { ValueID = 100, KeyID = 10000, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
+            var value2 = new Value { ValueID = 101, KeyID = 10001, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "9500", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
 
-            var value3 = new Value { ValueID = 102, KeyID = 10010, Scope = KeyValueScope.Shared, Val = "234", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
-            var value4 = new Value { ValueID = 103, KeyID = 10011, Scope = KeyValueScope.Shared, Val = "9400", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
+            var value3 = new Value { ValueID = 102, KeyID = 10010, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "234", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
+            var value4 = new Value { ValueID = 103, KeyID = 10011, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "9400", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
 
-            var value5 = new Value { ValueID = 104, KeyID = 10020, Scope = KeyValueScope.Shared, Val = "345", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
-            var value6 = new Value { ValueID = 105, KeyID = 10021, Scope = KeyValueScope.Shared, Val = "9600", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
+            var value5 = new Value { ValueID = 104, KeyID = 10020, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "345", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
+            var value6 = new Value { ValueID = 105, KeyID = 10021, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "9600", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
 
-            var value7 = new Value { ValueID = 106, KeyID = 1100, Scope = KeyValueScope.Shared, Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
-            var value8 = new Value { ValueID = 107, KeyID = 1110, Scope = KeyValueScope.Shared, Val = "Mark", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
-            var value9 = new Value { ValueID = 108, KeyID = 1120, Scope = KeyValueScope.Shared, Val = "Luke", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
+            var value7 = new Value { ValueID = 106, KeyID = 1100, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
+            var value8 = new Value { ValueID = 107, KeyID = 1110, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "Mark", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
+            var value9 = new Value { ValueID = 108, KeyID = 1120, Scope = GameServerDAL.Entities.KeyValueScope.Shared, Val = "Luke", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
 
             db.Values.Add(value1);
             db.Values.Add(value2);
@@ -138,10 +138,11 @@ namespace GameServerBLL
 
         public void DelteAllData()
         {
-            //db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
+            db.UserSessions.RemoveRange(db.UserSessions.Select(s => s));
             db.UserSessions.RemoveRange(db.UserSessions);
             db.UserClients.RemoveRange(db.UserClients);
             db.Users.RemoveRange(db.Users);
+            //if (db.Keys != null)
             db.Keys.RemoveRange(db.Keys);
             db.Values.RemoveRange(db.Values);
 
@@ -175,6 +176,12 @@ namespace GameServerBLL
         {
             Dispose(false);
         }
+
+        public void SaveChanges()
+        {
+            this.db.SaveChanges();
+        }
+
 
 	}
 }

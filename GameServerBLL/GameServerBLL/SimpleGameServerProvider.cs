@@ -135,14 +135,28 @@ namespace GameServerBLL
             return userSessionToken;
         }
 
+
+        // Key-valueRow_Value Storage
         public void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value)
         {
+            string[] arrKey = key.Split(',');
+       
+            if (arrKey[3].Trim() == "PlayerName")
+                SetValue_PlayerName(sessionToken, scope, key, value);
 
+            if (arrKey[3].Trim() == "Score") ;
+                //SetValue_Score(sessionToken, scope, key, value);
+
+            db.SaveChanges();
         }
 
         public string GetValue(Guid sessionToken, KeyValueScope scope, string key)
         {
-            return String.Empty;
+            string[] arrKey = key.Split(',');
+            int p_key = Convert.ToInt32(arrKey[0].Trim());
+            Value value = db.Values.Where( val => val.KeyID == p_key).SingleOrDefault();
+
+            return value.Val;
         }
 
         #endregion
@@ -153,6 +167,51 @@ namespace GameServerBLL
                         select u.Email;
 
             return query;
+        }
+
+        // add a new Player Name to the Key table and its respective value to Value table
+        private void SetValue_PlayerName(Guid sessionToken, KeyValueScope scope, string key, string value)
+        {
+            string[] arrKey = key.Split(',');
+
+            // valueRow_KeyID for Players row
+            // asuming players row is always there (if assumption wrong, playres row can be added here if not present)
+            var query = db.Keys.Where(keyRow => keyRow.Name == "Players").Select(keyRow => new { KeyID = keyRow.KeyID, Depth = keyRow.Depth }).SingleOrDefault();
+            int playersRow_KeyID = query.KeyID;
+            int playersRow_Depth = query.Depth;
+
+            // leaf node for player
+            int leafPlayer_KeyID = db.Keys.Where(keyRow => keyRow.ParentID == playersRow_KeyID).Select(x => x.KeyID).Max();
+
+            // insert player's id row
+            int playerIDRow_KeyID = leafPlayer_KeyID + 1;
+            int playerIDRow_ParentID = playersRow_KeyID;
+            int playerIDRow_Depth = playersRow_Depth + 1;
+            string playerIDRow_Name = "456"; // hard code "456" not sure how calculate this id
+            var playerIdRow = new Key { KeyID = playerIDRow_KeyID, ParentID = playerIDRow_ParentID, Depth = playerIDRow_Depth, Name = playerIDRow_Name };
+            db.Keys.Add(playerIdRow);
+
+            //insert player's name row
+            int playerNameRow_KeyID = Convert.ToInt32(playerIDRow_KeyID.ToString() + "0");
+            int playerNameRow_ParentID = playerIDRow_KeyID;
+            int playerNameRow_Depth = playerIDRow_Depth + 1;
+            string playerNameRow_Name = arrKey[3].Trim();
+
+            var playerNameRow = new Key { KeyID = playerNameRow_KeyID, ParentID = playerNameRow_ParentID, Depth = playerNameRow_Depth, Name = playerNameRow_Name };
+            db.Keys.Add(playerNameRow);
+
+            // insert value for above key
+            string[] arrValue = value.Split(',');
+
+            // ValueID = 0; // identity_row
+            int valueRow_KeyID = playerNameRow_KeyID;
+            GameServerDAL.Entities.KeyValueScope valueRow_Scope = (GameServerDAL.Entities.KeyValueScope)Convert.ToInt32(arrValue[2].Trim());
+            string valueRow_Value = arrValue[3].Trim();
+            int valueRow_SetByUserID = Convert.ToInt32(arrValue[4].Trim());
+            DateTime valueRow_SetAtTime = DateTime.Now;
+
+            var valueRow = new Value { /*ValueID is identity_val*/ KeyID = valueRow_KeyID, Scope = valueRow_Scope, Val = valueRow_Value, SetByUserID = valueRow_SetByUserID, SetAtTime = valueRow_SetAtTime };
+            db.Values.Add(valueRow);
         }
     }
 }

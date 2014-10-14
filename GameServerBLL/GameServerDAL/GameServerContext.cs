@@ -19,6 +19,7 @@ namespace GameServerDAL
             {
                 if (instance == null)
                 {
+                    //System.Data.Entity.Database.SetInitializer(new MigrateDatabaseToLatestVersion<GameServerContext, GameServerDAL.Migrations.Configuration>());
                     instance = new GameServerContext();
                 }
                 return instance;
