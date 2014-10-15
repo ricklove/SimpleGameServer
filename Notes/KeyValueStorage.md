@@ -2,6 +2,55 @@ Efficient key storage and lookups
 
 The code in this document is pseudocode and indicates the intention, not the correct implementation.
 
+--- 
+
+Multiple Lineage Columns limits the depth, but it simplifies three issues:
+
+- The DB is easier to understand (joining on the key columns will make the key obvious)
+- Searching is simple (the key part ids can be found and searched)
+- Finding a range is simple at any depth (each column can be filtered independently from others)
+
+## Multiple Lineage Columns
+
+- http://stackoverflow.com/a/6802687/684229
+
+This will limit the depth of the keys, but that should be an acceptable design limitation.
+
+30 max depth should be plenty for any key.
+
+Each part of the key can have a big name (256 should be fine): nvarchar(256)
+
+
+Key Table:
+
+- ID	name
+- 1		"TOLD"
+- 37	"SpellWellFunRun"
+- 59	"HighScores"
+- 93123	"PlayerID"
+- 24	"Players"
+- 24732	"PlayerName"
+
+
+Value Table:
+
+A negative keyID represents an index rather than a specific key.
+
+- ID		value		Key1ID	Key2ID	Key3ID	Key4ID	...	Key30ID		
+- 4232		"Rick"		1		24		-3213	24732	...	NULL	
+	- key = TOLD.Players.3213.PlayerName
+- 32443		3213		1 		59 		-1		93123	...	NULL	
+	- key = TOLD.HighScores.1.PlayerID
+
+
+
+
+---
+
+---
+
+This is too complex and searching is a problem.
+
 
 ## Flat Table - Adjacency List with Depth (Rank is not needed)
 

@@ -83,6 +83,13 @@ CreateSession should:
 
 # Implement Key-Value Storage
 
+The previous implementation proved to be too complex.
+
+The below represents a complete replacement for the previous details.
+
+This will use Multiple Lineage Columns for the key instead of an Adjacency List with depth. 
+
+
 ## Add Set and Get methods to ISimpleGameServer
 
 - void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value);
@@ -98,66 +105,74 @@ enum KeyValueScope{
 
 - Key:
 	- int KeyID // Primary Key
-	- int ParentID //Null or KeyID must exist
-	- int Depth
 	- string Name
 
 - Value:
 	- int ValueID // Primary Key
-	- int KeyID
-	- KeyValueScope Scope
 	- string Value
 	- int SetByUserID
 	- datetime SetAtTime //Timestamp
+	- KeyValueScope Scope
+	- int Key1ID
+	- int Key2ID
+	- int Key3ID
+	- ...
+	- int Key23ID
+	- int Key24ID
 
 
 ## Create test data
 
 ### Key Table
 
-- KeyID	ParentID	depth	name
-- 1		NULL		0		"TOLD"
-- 10	1			1		"MyGame"
-- 100	10			2		"HighScores"
-- 1000	100			3		"1"
-- 10000	1000		4		"PlayerID"
-- 10001	1000		4		"Score"
+- KeyID	name
+- 1		"TOLD"
+- 2		"MyGame"
+- 3		"HighScores"
+- 4		"PlayerID"
+- 5		"Score"
 
-- 1001	100			3		"2"
-- 10010	1001		4		"PlayerID"
-- 10011	1001		4		"Score"
-
-- 1002	100			3		"3"
-- 10020	1002		4		"PlayerID"
-- 10021	1002		4		"Score"
-
-- 11	1			1		"Players"
-- 110	11			2		"123"
-- 1100	110			3		"PlayerName"
-
-- 111	11			2		"234"
-- 1110	111			3		"PlayerName"
-
-- 112	11			2		"345"
-- 1120	112			3		"PlayerName"
+- 6		"Players"
+- 7		"PlayerName"
 
 
 ### Value Table
 
-- ValueID	KeyID	Scope	Value	SetByUserID		SetAtTime
-- 100		10000	1		"123"	1				2014-01-01 12:00
-- 101		10001	1		"9500"	1				2014-01-01 12:00
+Values:
 
-- 102		10010	1		"234"	2				2014-01-02 12:00
-- 103		10011	1		"9400"	2				2014-01-02 12:00
+- TOLD.MyGame.HighScores.1.PlayerID ->  "123"
+- TOLD.MyGame.HighScores.1.Score ->  "9500"
+- TOLD.MyGame.HighScores.2.PlayerID ->  "234"
+- TOLD.MyGame.HighScores.2.Score ->  "9400"
+- TOLD.MyGame.HighScores.3.PlayerID ->  "345"
+- TOLD.MyGame.HighScores.3.Score ->  "9600"
+- TOLD.Players.1.PlayeID ->  "345"
+- TOLD.Players.1.PlayerName ->  "Matthew"
+- TOLD.Players.2.PlayeID ->  "234"
+- TOLD.Players.2.PlayerName ->  "Mark"
+- TOLD.Players.3.PlayeID ->  "123"
+- TOLD.Players.3.PlayerName ->  "Luke"
 
-- 104		10020	1		"345"	3				2014-01-03 12:00
-- 105		10021	1		"9600"	3				2014-01-03 12:00
+Table:
 
+Int values in the key are mapped to a negative keyID.
 
-- 106		1100	1		"Matthew"	1				2014-01-01 12:00
-- 107		1110	1		"Mark"	2				2014-01-02 12:00
-- 108		1120	1		"Luke"	3				2014-01-03 12:00
+- ValueID	Value		SetByUserID		SetAtTime			Scope	Key1ID	Key2ID	Key3ID	Key4ID	Key5ID  ... 	Key30ID
+- 100		"123"		1				2014-01-01 12:00    1		1		2		3		-1		4		NULL	NULL
+- 101		"9500"		1				2014-01-01 12:00    1		1		2		3		-1		5		NULL	NULL
+
+- 102		"234"		2				2014-01-02 12:00    1		1		2		3		-2		4		...
+- 103		"9400"		2				2014-01-02 12:00    1		1		2		3		-2		5		...
+
+- 104		"345"		3				2014-01-03 12:00    1		1		2		3		-3		4		...
+- 105		"9600"		3				2014-01-03 12:00    1		1		2		3		-3		5		...
+
+- 106		"345"		3				2014-01-03 12:00    1		1		6		-1		4		NULL	...
+- 107		"Matthew"	3				2014-01-03 12:00    1		1		6		-1		7		NULL	...
+- 108		"234"		2				2014-01-02 12:00    1		1		6		-2		4		...
+- 109		"Matthew"	2				2014-01-02 12:00    1		1		6		-1		7		...
+- 110		"123"		1				2014-01-01 12:00    1		1		6		-3		4		...
+- 111		"Matthew"	1				2014-01-01 12:00    1		1		6		-1		7		...
 
 
 
@@ -168,6 +183,7 @@ enum KeyValueScope{
 	- TOLD.MyGame.HighScores.2.PlayerID ->  "234"
 	- TOLD.MyGame.Players.123.PlayerName ->  "Matthew"
 	- TOLD.MyGame.Players.234.PlayerName ->  "Mark"
+	- etc.
 
 - Call GetValue for a nonexistent key should return ""
 - Call SetValue should change the existing value (verify with GetValue)
@@ -178,45 +194,127 @@ enum KeyValueScope{
 
 Set Value should:
 
-- Break the key into parts (KeyID	ParentID	depth	name)
-- Create a key row for any missing parts
-- Lookup the leaf KeyID for the key
-- Use the leaf KeyID to set the value
+- Break the key into parts (string[] keyParts)
+- Lookup the KeyID for each key part (int[] keyPartIDs)
+	- Create a key row for any missing parts
+	- Use a negative id value for any int key values
+	- Example:
+		- key = "TOLD.MyGame.HighScores.1.PlayerID"
+		- keyParts = "TOLD", "MyGame", "HighScores", "1", "PlayerID"
+		- // Map each key part to the correct keyID (see In-Memory Lookups below)
+		- // TOLD=>1, MyGame=>2, HighScores=>3, 1=>-1, PlayerID=>4 
+		- keyPartIDs = 1, 2, 3, -1, 4
+		
+- Map each part to its column (Key1ID Key2ID Key3ID ... Key30ID)
+	- Example:
+		- keyPartIDs = 1, 2, 3, -1, 4
+		- Key1ID = 1
+		- Key2ID = 2
+		- Key3ID = 3
+		- Key4ID = -1
+		- Key5ID = 4
 
 Get Value should:
 
-- Lookup the KeyID for the key
-- Get the value for that KeyID
+- Get the KeyPartIDs (same as above)
+- Get the value for that combination of KeyPartIDs	
+		
+		SELECT *
+		FROM TABLE
+		WHERE Key1ID == keyPartIDs[0]
+		AND Key2ID == keyPartIDs[1]
+		AND Key3ID == keyPartIDs[2]
+		...
+		AND Key30ID == keyPartIDs[29]
+
 - Return the value
 
 
 ### In-Memory Lookups
 
-A copy of the entire key table can be stored in-memory for lookups. 
+A copy of the entire key table can be stored in-memory for lookups in some simple dictionaries. 
 
-	Dictionary<int, Key> keyIdLookup;
+	Dictionary<string, int> keyIdLookup;
+	Dictionary<int, string> keyIdReverseLookup;
 
-Then, a hashtable can be built from the hash of the full key:
+Then it is simple to lookup any key without querying the db.
 
-	Dictionary<int, List<Key>> keyHashLookup;
+#### LookupKeyPart:
 
-To build the hashtable:
+If the key is an int, it should return the negative value
+If a key does not exist, it should be added to the db and the lookups
 
-- Go through each key
-	- (Example: KeyData = 10000	1000	4	"PlayerID")
-- Create its full key from recursively following it's parents 
-	- (Example: GetFullKey() => "TOLD.MyGame.HighScores.1.PlayerID")
-- Create a hash from this full key
-	- (Example: TOLD.MyGame.HighScores.1.PlayerID -> 983249832)
-- Add that key to the keyHashLookup
-	- (Example: TOLD.MyGame.HighScores.1.PlayerID -> 983249832)
+	int LookupKeyPart( string keyPart ) {
 
-To do a lookup using the full key:
+		int val;
 
-- Calculate the hash for the full key
-	- (Example: TOLD.MyGame.HighScores.1.PlayerID -> 983249832)
-- Find keys with matching hashes
-	- var matches = keyHashLookup[983249832]
-- Verify the correct match has the correct full path by recusively followint it's parents
-	- var key = matches.FirstOrDefault(m=>m.GetFullKey() == fullKey)
+		if( int.TryParse( keyPart, out val ) ){
+			return -val;
+		}
+
+		if( !keyIDLookup.HasKey( keyPart ) ){
+			// TODO: Add to DB key
+			// TODO: Get the new ID for the new key
+			// TODO: Add the mapping to the keyIDLookup and keyIDReverseLookup
+		}
+	
+		return keyIDLookup[keyPart];
+
+	}
+
+Examples:
+
+	LookupKeyPart("TOLD") => 1
+	LookupKeyPart("MyGame") => 2
+	LookupKeyPart("100") => -100
+
+#### LookupKeyID:
+
+	string LookupKeyID( int? keyID) {
+		if( !keyID.HasValue ){
+			return "";
+		}
+
+		if( keyID < 0 ){
+			return "" + -keyID.Value;
+		}
+
+		return keyIdReverseLookup[keyID.Value];
+	}
+
+Examples:
+	LookupKeyID(1) => "TOLD"
+	LookupKeyID(-100) => 100
+
+
+
+#### KeyIDs Property in Value class
+
+	int[] KeyIDs{
+		get{
+			var ids = new List<int>();
+			
+			if( Key1ID.HasValue ) { ids.Add(Key1ID.Value); } else { return ids.ToArray(); }
+			if( Key2ID.HasValue ) { ids.Add(Key2ID.Value); } else { return ids.ToArray(); }
+			...
+			if( Key30ID.HasValue ) { ids.Add(Key30ID.Value); } else { return ids.ToArray(); }
+			
+			return ids.ToArray();
+		}
+	}
+
+#### KeyString Property in Value class
+
+	string KeyString{
+		get{
+		
+			StringBuilder text = new StringBuilder();
+			
+			foreach( var id in KeyIDs){
+				text.Append( LookupKeyID( id ) + "." );
+			}
+
+			return text.ToString().TrimEnd('.');
+		}
+	}
 
