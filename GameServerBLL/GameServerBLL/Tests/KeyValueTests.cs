@@ -12,7 +12,7 @@ namespace GameServerBLL.Tests
     {
         ISimpleGameServer provider = SimpleGameServerProvider.Instance;
 
-        public void Get_MyGame_Players_123_PlayerName_Matthew_Succeeds()
+        public void key1_ShoulReturnValue_123()
         {
             string key = "1100, 110, 3, PlayerName";
             string value = "Matthew";

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using GameServerDAL.Entities;
-using System.Linq;
 
 namespace GameServerBLL
 {
@@ -20,7 +19,10 @@ namespace GameServerBLL
         private Cache()
         {
             is_Initialized = false;
-            keyHashLookup = new Dictionary<int, List<Key>>();
+            keyIdLookup = new Dictionary<string, int>();
+            keyIdReverseLookup = new Dictionary<int,string>();
+
+            EntityModeler em = new EntityModeler();
         }
 
         public static Cache Instance
@@ -32,55 +34,59 @@ namespace GameServerBLL
         }
 
         bool is_Initialized;
-        DbSet<Key> Keys;
-        DbSet<Value> Values;
-
-        private Dictionary<int, Key> keyIdLookup;
-        private Dictionary<int, List<Key>> keyHashLookup;
+        EntityModeler em;
+        private Dictionary<string, int> keyIdLookup;
+        private Dictionary<int, string> keyIdReverseLookup;
         private string strFullKey;
 
-        public void Initialize(DbSet<Key> p_Keys, DbSet<Value> p_Values)
+        public void Initialize(DbSet<Key> keys, DbSet<Value> values)
         {
             if (!is_Initialized)
             {
                 is_Initialized = true;
 
-                this.Keys = p_Keys;
-                this.Values = p_Values;
-
-                FillCache(); 
+                foreach (Key keyRow in keys)
+                {
+                    keyIdLookup.Add(keyRow.Name, keyRow.KeyID);
+                }
             }
+        }
+
+        public int LookupKeyPart(string keyPart)
+        {
+            int val;
+
+            if (int.TryParse(keyPart, out val))
+            {
+                return -val;
+            }
+
+            if (!keyIdLookup.ContainsKey(keyPart))
+            {
+                // Add to DB key
+                em.AddKeyRow(keyPart);
+                // Get the new ID for the new key
+                int keyID = em.GetIdForKeyPart(keyPart);
+                // Add the mapping to the keyIDLookup and keyIDReverseLookup
+                keyIdLookup.Add(keyPart, keyID);
+            }
+
+            return keyIdLookup[keyPart];
         }
 
         public void FindKeyForHash(int hashCode)
         {
-            var matches = keyHashLookup[hashCode];
-        }
-
-        private void FillCache()
-        {
-            List<string> fullKey;
-
-            foreach (Key keyData in Keys)
-            {
-                fullKey = new List<string>();
-                string sFullKey = GetFullkey(keyData, fullKey);
-                List<Key> keyAncestry = new List<Key>();
-                GetKeyAncestry(keyData, keyAncestry);
-
-                int hashKey = sFullKey.GetHashCode();
-                keyHashLookup.Add(hashKey, keyAncestry);
-            }
+            //var matches = keyHashLookup[hashCode];
         }
 
         private void GetKeyAncestry(Key keyData, List<Key> keyList)
         {
-            keyList.Add(keyData);
+            //keyList.Add(keyData);
 
-            if (keyData.ParentID == null)
-                keyList.Reverse();
-            else
-                GetKeyAncestry(Keys.Find(keyData.ParentID), keyList);
+            //if (keyData.ParentID == null)
+            //    keyList.Reverse();
+            //else
+            //    GetKeyAncestry(Keys.Find(keyData.ParentID), keyList);
 
         }
 
@@ -88,15 +94,18 @@ namespace GameServerBLL
         {
             fullKey.Add(keyData.Name);
 
-            if (keyData.ParentID == null)
+            //if (keyData.ParentID == null)
+            if (6 == 9) //todo
             {
                 fullKey.Reverse();
                 strFullKey = String.Join(".", fullKey);
                 return strFullKey;
             }
             else
-                GetFullkey(Keys.Find(keyData.ParentID), fullKey);
+            {
+                //GetFullkey(Keys.Find(keyData.ParentID), fullKey); todo
 
+            }
             return strFullKey;
         }
 

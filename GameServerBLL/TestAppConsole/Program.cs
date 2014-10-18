@@ -20,10 +20,7 @@ namespace TestAppConsole
         static void Main(string[] args)
         {
             EntityModeler em = new EntityModeler();
-            //em.DeleteDB();
-            //em.SaveChanges();
 
-            em.DelteAllData();
             em.AddTestData();
             em.AddTestDataKeyValue();
 
@@ -34,7 +31,6 @@ namespace TestAppConsole
             {
                 Console.WriteLine(item);
             }
-
 
             SimpleGameServerProvider provider = SimpleGameServerProvider.Instance;
             provider.Register("faqiraamir@gamil.com", "pass1234");
@@ -56,19 +52,26 @@ namespace TestAppConsole
             if (userSessionToken != Guid.Empty)
             {
                 // test key-value storage
-                provider.SetValue(userSessionToken, GameServerBLL.KeyValueScope.Shared, "xxx_KeyID, xxx_ParentID, xxx_Depth, PlayerName", "xxx_ValueID, xxx_KeyID, 1, Faqir, 4, xxx_SetAtTime");
-                string key = "1130, 113, 3, PlayerName";
-                string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key);
+                string key = "TOLD.Players.4.PlayeID";
+                string value = "456";
+                provider.SetValue(userSessionToken, GameServerBLL.KeyValueScope.Shared, key, value);
+                string out_value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key);
 
-                Console.WriteLine("key : ( {0} ) ----- Value : {1}", key, value);
+                if (value.Equals(out_value))
+                {
+                    Console.WriteLine("Retrieval successful");
+                    Console.WriteLine("key : ( {0} ) ----- Value : {1}", key, value);
+                }
+                else
+                    Console.WriteLine("Retrieval Invalid");
 
                 // Test to look Up using Full key
-                provider.BuildCache();
+                //provider.BuildCache();
 
-                string fullKey = "TOLD.MyGame.HighScores.1.PlayerID";
-                int hashCodeFullKey = em.GetHashForFullKey(fullKey);
+                //string fullKey = "TOLD.MyGame.HighScores.1.PlayerID";
+                //int hashCodeFullKey = em.GetHashForFullKey(fullKey);
 
-                em.FindKeyForHash(hashCodeFullKey);
+                //em.FindKeyForHash(hashCodeFullKey);
 
 
 

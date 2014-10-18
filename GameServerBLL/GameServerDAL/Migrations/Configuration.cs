@@ -10,6 +10,7 @@ namespace GameServerDAL.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "GameServerDAL.GameServerContext";
         }
 

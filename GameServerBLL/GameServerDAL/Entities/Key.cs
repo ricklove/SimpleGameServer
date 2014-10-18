@@ -10,11 +10,8 @@ namespace GameServerDAL.Entities
 {
     public class Key
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)] // Primary key 
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Primary key 
         public int KeyID { get; set; }
-        //[Required()]
-        public int? ParentID { get; set; } // //Null or KeyID must exist
-        public int Depth { get; set; }
         public string Name { get; set; }
     }
 }

@@ -8,10 +8,23 @@ using GameServerDAL.Entities;
 
 namespace GameServerDAL
 {
+
+    public class GameServerContextInitializer : DropCreateDatabaseAlways<GameServerContext>
+    {
+        protected override void Seed(GameServerContext context)
+        {
+            //base.Seed(context);
+            context.Database.ExecuteSqlCommand("DBCC CHECKIDENT('Values', RESEED, 100);");
+        }
+    }
+
     public class GameServerContext : DbContext 
     {
         private static GameServerContext instance;
-        private GameServerContext() { }
+        public GameServerContext()
+        {
+            Database.SetInitializer<GameServerContext>(new GameServerContextInitializer());
+        }
 
         public static GameServerContext Instance
         {
@@ -44,8 +57,8 @@ namespace GameServerDAL
                 .HasRequired(t => t.UserClient);
 
             // Map one-to-zero relationship 
-            modelBuilder.Entity<Value>()
-                .HasRequired(t => t.Key);
+            //modelBuilder.Entity<Value>()
+            //    .HasRequired(t => t.Key);
         } 
     }
 }
