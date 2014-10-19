@@ -8,33 +8,56 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GameServerBLL.Tests
 {
-    class RegisterTests
+    public class RegisterTests
     {
+        public RegisterTests()
+        {
+            AllTestPassed = false;
+        }
+
+        public bool AllTestPassed { get; set; }
+
         ISimpleGameServer provider = SimpleGameServerProvider.Instance;
 
         public void Register_IvalidEmail_Fails()
         {
             string invalidEmail = "fa@ab@_solution";
-            Assert.IsFalse(provider.Register(invalidEmail, "pass"));
+
+            if (false == provider.Register(invalidEmail, "pass"))
+                AllTestPassed = true;
+            else
+                AllTestPassed = false;
         }
 
         public void Register_NoPassword_Fails()
         {
             string validNewEmail = "validNewEmail@yahoo.com";
-            Assert.IsFalse(provider.Register(validNewEmail, String.Empty));
+
+            if (false == provider.Register(validNewEmail, String.Empty))
+                AllTestPassed = true;
+            else
+                AllTestPassed = false;
         }
 
         public void Register_ExistingEmail_Fails()
         {
             string newEmail = "faamirpk@yahoo.com";
-            Assert.IsFalse(provider.Register(newEmail, "pass"));
+
+            if (false == provider.Register(newEmail, "pass"))
+                AllTestPassed = true;
+            else
+                AllTestPassed = false;
         }
 
         public void Register_ValidnewEmail_AndPassword_Succeeds()
         {
-            string newEmail = "faamirpk@yahoo.com";
+            string newEmail = "validNewEmail@yahoo.com";
             string password = "password";
-            Assert.IsTrue(provider.Register(newEmail, password));
+
+            if (true == provider.Register(newEmail, password))
+                AllTestPassed = true;
+            else
+                AllTestPassed = false;
         }
     }
 }

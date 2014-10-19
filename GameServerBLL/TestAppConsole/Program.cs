@@ -20,9 +20,14 @@ namespace TestAppConsole
         static void Main(string[] args)
         {
             EntityModeler em = new EntityModeler();
-
             em.AddTestData();
-            em.AddTestDataKeyValue();
+
+            bool testsResultRegisterLogin = Run_ReisterLoginTests();
+
+            if (testsResultRegisterLogin)
+                Console.WriteLine("All tests for Register Login passed \n");
+            else
+                Console.WriteLine("Some or all tests for Register Login failed \n");
 
             List<string> usersEmail = em.ShowUsers();
 
@@ -52,7 +57,16 @@ namespace TestAppConsole
             if (userSessionToken != Guid.Empty)
             {
                 // test key-value storage
-                string key = "TOLD.Players.4.PlayeID";
+                em.AddTestDataKeyValue();
+                bool testsResult = Run_KeyValueTests();
+
+                if (testsResult)
+                    Console.WriteLine("\n All tests for key-value storage passed");
+                else
+                    Console.WriteLine("\n Some or all tests for key-value storage failed");
+
+                // add key value through provider // "TOLD.Players.4.PlayeID";
+                string key = "TOLD.Players.4.PlayerID";
                 string value = "456";
                 provider.SetValue(userSessionToken, GameServerBLL.KeyValueScope.Shared, key, value);
                 string out_value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key);
@@ -80,6 +94,28 @@ namespace TestAppConsole
 
             provider.Dispose();
             em.Dispose();
+        }
+
+        static bool Run_KeyValueTests()
+        {
+            GameServerBLL.Tests.KeyValueTests test = new GameServerBLL.Tests.KeyValueTests();
+            test.key1_ShoulReturnValue_value1();
+            test.key2_ShoulReturnValue_value2();
+            test.key3_ShoulReturnValue_value3();
+            test.key4_ShoulReturnValue_value4();
+
+            return test.AllTestPassed;
+        }
+
+        static bool Run_ReisterLoginTests()
+        {
+            GameServerBLL.Tests.RegisterTests test = new GameServerBLL.Tests.RegisterTests();
+            test.Register_IvalidEmail_Fails();
+            test.Register_NoPassword_Fails();
+            test.Register_ExistingEmail_Fails();
+            test.Register_ValidnewEmail_AndPassword_Succeeds();
+
+            return test.AllTestPassed;
         }
     }
 }

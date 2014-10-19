@@ -8,13 +8,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GameServerDAL.Entities
 {
-
-    public enum KeyValueScope
-    {
-        User,
-        Shared
-    }
-
     public class Value
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Primary key 
@@ -58,7 +51,7 @@ namespace GameServerDAL.Entities
         // Navigation property 
         //public virtual Key Key { get; set; }
  
-        int[] KeyIDs
+        public int[] KeyIDs
         {
 		    get
             {
@@ -100,20 +93,5 @@ namespace GameServerDAL.Entities
 			    return ids.ToArray();
 		    }
 	    }
-
-        string KeyString
-        {
-            get
-            {
-                StringBuilder text = new StringBuilder();
-
-                foreach (var id in KeyIDs)
-                {
-                    //text.Append(LookupKeyID(id) + ".");
-                }
-
-                return text.ToString().TrimEnd('.');
-            }
-        }
     }
 }

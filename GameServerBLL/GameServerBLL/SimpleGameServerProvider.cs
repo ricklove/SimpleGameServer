@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GameServerDAL;
 using GameServerDAL.Entities;
 
-using DALScope = GameServerDAL.Entities.KeyValueScope;
+using DALScope = GameServerDAL.KeyValueScope;
 
 namespace GameServerBLL
 {
@@ -45,7 +45,6 @@ namespace GameServerBLL
             // It is a static property that points to the static instance of the server provider
             internal static readonly SimpleGameServerProvider SimpleGameServer = new SimpleGameServerProvider();
         }
-
 
         #region ISimpleGameServer Interface Methods
 
@@ -145,81 +144,151 @@ namespace GameServerBLL
         public void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value)
         {
             int?[] keyPartIDs = GetKeyPartIDs(key);
+            Value ValRow = GetValueRow(keyPartIDs);
 
-            int userID = GetUserIdForSession(sessionToken);
-            Value valueRow = new Value { Val = value, SetByUserID = userID, SetAtTime = DateTime.Now, Scope = (DALScope)scope,
-                                         Key1ID = keyPartIDs[0],
-                                         Key2ID = keyPartIDs[1],
-                                         Key3ID = keyPartIDs[2],
-                                         Key4ID = keyPartIDs[3],
-                                         Key5ID = keyPartIDs[4],
-                                         Key6ID = keyPartIDs[5],
-                                         Key7ID = keyPartIDs[6],
-                                         Key8ID = keyPartIDs[7],
-                                         Key9ID = keyPartIDs[8],
-                                         Key10ID = keyPartIDs[9],
-                                         Key11ID = keyPartIDs[10],
-                                         Key12ID = keyPartIDs[11],
-                                         Key13ID = keyPartIDs[12],
-                                         Key14ID = keyPartIDs[13],
-                                         Key15ID = keyPartIDs[14],
-                                         Key16ID = keyPartIDs[15],
-                                         Key17ID = keyPartIDs[16],
-                                         Key18ID = keyPartIDs[17],
-                                         Key19ID = keyPartIDs[18],
-                                         Key20ID = keyPartIDs[19],
-                                         Key21ID = keyPartIDs[20],
-                                         Key22ID = keyPartIDs[21],
-                                         Key23ID = keyPartIDs[22],
-                                         Key24ID = keyPartIDs[23],
-                                         Key25ID = keyPartIDs[24],
-                                         Key26ID = keyPartIDs[25],
-                                         Key27ID = keyPartIDs[26],
-                                         Key28ID = keyPartIDs[27],
-                                         Key29ID = keyPartIDs[28],
-                                         Key30ID = keyPartIDs[29]
-                                        };
+            if (ValRow == null)
+            {
+                int userID = GetUserIdForSession(sessionToken);
+                Value valueRow = new Value
+                {
+                    Val = value,
+                    SetByUserID = userID,
+                    SetAtTime = DateTime.Now,
+                    Scope = (DALScope)scope,
+                    Key1ID = keyPartIDs[0],
+                    Key2ID = keyPartIDs[1],
+                    Key3ID = keyPartIDs[2],
+                    Key4ID = keyPartIDs[3],
+                    Key5ID = keyPartIDs[4],
+                    Key6ID = keyPartIDs[5],
+                    Key7ID = keyPartIDs[6],
+                    Key8ID = keyPartIDs[7],
+                    Key9ID = keyPartIDs[8],
+                    Key10ID = keyPartIDs[9],
+                    Key11ID = keyPartIDs[10],
+                    Key12ID = keyPartIDs[11],
+                    Key13ID = keyPartIDs[12],
+                    Key14ID = keyPartIDs[13],
+                    Key15ID = keyPartIDs[14],
+                    Key16ID = keyPartIDs[15],
+                    Key17ID = keyPartIDs[16],
+                    Key18ID = keyPartIDs[17],
+                    Key19ID = keyPartIDs[18],
+                    Key20ID = keyPartIDs[19],
+                    Key21ID = keyPartIDs[20],
+                    Key22ID = keyPartIDs[21],
+                    Key23ID = keyPartIDs[22],
+                    Key24ID = keyPartIDs[23],
+                    Key25ID = keyPartIDs[24],
+                    Key26ID = keyPartIDs[25],
+                    Key27ID = keyPartIDs[26],
+                    Key28ID = keyPartIDs[27],
+                    Key29ID = keyPartIDs[28],
+                    Key30ID = keyPartIDs[29]
+                };
 
-            db.SaveChanges();
+                db.Values.Add(valueRow);
+                db.SaveChanges();
+            }
+            else
+            {
+                ValRow.Val = value;
+                db.SaveChanges();
+            }
         }
 
         public string GetValue(Guid sessionToken, KeyValueScope scope, string key)
         {
             int?[] keyPartIDs = GetKeyPartIDs(key);
 
-            string value = db.Values.Where(v => v.Key1ID == keyPartIDs[0]
-                                                && v.Key2ID == keyPartIDs[1]
-                                                && v.Key3ID == keyPartIDs[2]
-                                                && v.Key4ID == keyPartIDs[3]
-                                                && v.Key5ID == keyPartIDs[4]
-                                                && v.Key6ID == keyPartIDs[5]
-                                                && v.Key7ID == keyPartIDs[6]
-                                                && v.Key8ID == keyPartIDs[7]
-                                                && v.Key9ID == keyPartIDs[8]
-                                                && v.Key10ID == keyPartIDs[9]
-                                                && v.Key11ID == keyPartIDs[10]
-                                                && v.Key12ID == keyPartIDs[11]
-                                                && v.Key13ID == keyPartIDs[12]
-                                                && v.Key14ID == keyPartIDs[13]
-                                                && v.Key15ID == keyPartIDs[14]
-                                                && v.Key16ID == keyPartIDs[15]
-                                                && v.Key17ID == keyPartIDs[16]
-                                                && v.Key18ID == keyPartIDs[17]
-                                                && v.Key19ID == keyPartIDs[18]
-                                                && v.Key20ID == keyPartIDs[19]
-                                                && v.Key21ID == keyPartIDs[20]
-                                                && v.Key22ID == keyPartIDs[21]
-                                                && v.Key23ID == keyPartIDs[22]
-                                                && v.Key24ID == keyPartIDs[23]
-                                                && v.Key25ID == keyPartIDs[24]
-                                                && v.Key26ID == keyPartIDs[25]
-                                                && v.Key27ID == keyPartIDs[26]
-                                                && v.Key28ID == keyPartIDs[27]
-                                                && v.Key29ID == keyPartIDs[28]
-                                                && v.Key30ID == keyPartIDs[29]
-                                            ).FirstOrDefault().Val;
+            Value valRow = GetValueRow(keyPartIDs);
 
-            return value;
+            if (null != valRow)
+                return valRow.Val;
+            else
+                return String.Empty;
+  
+        }
+
+        private Value GetValueRow(int?[] keyPartIDs)
+        {
+            int? keyPartID_0 = keyPartIDs[0];
+            int? keyPartID_1 = keyPartIDs[1];
+            int? keyPartID_2 = keyPartIDs[2];
+            int? keyPartID_3 = keyPartIDs[3];
+            int? keyPartID_4 = keyPartIDs[4];
+            int? keyPartID_5 = keyPartIDs[5];
+            int? keyPartID_6 = keyPartIDs[6];
+            int? keyPartID_7 = keyPartIDs[7];
+            int? keyPartID_8 = keyPartIDs[8];
+            int? keyPartID_9 = keyPartIDs[9];
+            int? keyPartID_10 = keyPartIDs[10];
+
+            int? keyPartID_11 = keyPartIDs[11];
+            int? keyPartID_12 = keyPartIDs[12];
+            int? keyPartID_13 = keyPartIDs[13];
+            int? keyPartID_14 = keyPartIDs[14];
+            int? keyPartID_15 = keyPartIDs[15];
+            int? keyPartID_16 = keyPartIDs[16];
+            int? keyPartID_17 = keyPartIDs[17];
+            int? keyPartID_18 = keyPartIDs[18];
+            int? keyPartID_19 = keyPartIDs[19];
+            int? keyPartID_20 = keyPartIDs[20];
+
+            int? keyPartID_21 = keyPartIDs[21];
+            int? keyPartID_22 = keyPartIDs[22];
+            int? keyPartID_23 = keyPartIDs[23];
+            int? keyPartID_24 = keyPartIDs[24];
+            int? keyPartID_25 = keyPartIDs[25];
+            int? keyPartID_26 = keyPartIDs[26];
+            int? keyPartID_27 = keyPartIDs[27];
+            int? keyPartID_28 = keyPartIDs[28];
+            int? keyPartID_29 = keyPartIDs[29];
+
+            Value valRow = db.Values.Where(v => v.Key1ID == keyPartID_0
+                                        && v.Key2ID == keyPartID_1
+                                        && v.Key3ID == keyPartID_2
+                                        && v.Key4ID == keyPartID_3
+                                        && v.Key5ID == keyPartID_4
+                                        && v.Key6ID == keyPartID_5
+                                        && v.Key7ID == keyPartID_6
+                                        && v.Key8ID == keyPartID_7
+                                        && v.Key9ID == keyPartID_8
+                                        && v.Key10ID == keyPartID_9
+                                        && v.Key11ID == keyPartID_10
+                                        && v.Key12ID == keyPartID_11
+                                        && v.Key13ID == keyPartID_12
+                                        && v.Key14ID == keyPartID_13
+                                        && v.Key15ID == keyPartID_14
+                                        && v.Key16ID == keyPartID_15
+                                        && v.Key17ID == keyPartID_16
+                                        && v.Key18ID == keyPartID_17
+                                        && v.Key19ID == keyPartID_18
+                                        && v.Key20ID == keyPartID_19
+                                        && v.Key21ID == keyPartID_20
+                                        && v.Key22ID == keyPartID_21
+                                        && v.Key23ID == keyPartID_22
+                                        && v.Key24ID == keyPartID_23
+                                        && v.Key25ID == keyPartID_24
+                                        && v.Key26ID == keyPartID_25
+                                        && v.Key27ID == keyPartID_26
+                                        && v.Key28ID == keyPartID_27
+                                        && v.Key29ID == keyPartID_28
+                                        && v.Key30ID == keyPartID_29
+                                        ).FirstOrDefault();
+            return valRow;
+        }
+
+        public string GetKeyString(Value value)
+        {
+            StringBuilder text = new StringBuilder();
+
+            foreach (var id in value.KeyIDs)
+            {
+                text.Append(cache.LookupKeyID(id) + ".");
+            }
+
+            return text.ToString().TrimEnd('.');
         }
 
         #endregion
@@ -252,59 +321,7 @@ namespace GameServerBLL
             return query;
         }
 
-        // add a new Player Name to the Key table and its respective value to Value table
-        private void SetValue_PlayerName(Guid sessionToken, KeyValueScope scope, string key, string value)
-        {
-            string[] arrKey = key.Split(',');
-
-            // valueRow_KeyID for Players row
-            // asuming players row is always there (if assumption wrong, playres row can be added here if not present)
-            var query = db.Keys.Where(keyRow => keyRow.Name == "Players").Select(keyRow => new { KeyID = keyRow.KeyID, Depth = 3/*keyRow.Depth  todo*/ }).SingleOrDefault();
-            int playersRow_KeyID = query.KeyID;
-            int playersRow_Depth = 1;//query.Depth; //TODO
-
-            // leaf node for player
-            int leafPlayer_KeyID = db.Keys.Where(keyRow => 3/*keyRow.ParentID  todo*/ == playersRow_KeyID).Select(x => x.KeyID).Max();
-
-            // insert player's id row
-            int playerIDRow_KeyID = leafPlayer_KeyID + 1;
-            int playerIDRow_ParentID = playersRow_KeyID;
-            int playerIDRow_Depth = playersRow_Depth + 1;
-            string playerIDRow_Name = "456"; // hard code "456" not sure how calculate this id
-            var playerIdRow = new Key { KeyID = playerIDRow_KeyID, Name = playerIDRow_Name }; // todo
-            db.Keys.Add(playerIdRow);
-
-            //insert player's name row
-            int playerNameRow_KeyID = Convert.ToInt32(playerIDRow_KeyID.ToString() + "0");
-            int playerNameRow_ParentID = playerIDRow_KeyID;
-            int playerNameRow_Depth = playerIDRow_Depth + 1;
-            string playerNameRow_Name = arrKey[3].Trim();
-
-            var playerNameRow = new Key { KeyID = playerNameRow_KeyID, Name = playerNameRow_Name }; //todo
-            db.Keys.Add(playerNameRow);
-
-            // insert value for above key
-            string[] arrValue = value.Split(',');
-
-            // ValueID = 0; // identity_row
-            int valueRow_KeyID = playerNameRow_KeyID;
-            GameServerDAL.Entities.KeyValueScope valueRow_Scope = (GameServerDAL.Entities.KeyValueScope)Convert.ToInt32(arrValue[2].Trim());
-            string valueRow_Value = arrValue[3].Trim();
-            int valueRow_SetByUserID = Convert.ToInt32(arrValue[4].Trim());
-            DateTime valueRow_SetAtTime = DateTime.Now;
-
-            //var valueRow = new Value { /*ValueID is identity_val*/ KeyID = valueRow_KeyID, Scope = valueRow_Scope, Val = valueRow_Value, SetByUserID = valueRow_SetByUserID, SetAtTime = valueRow_SetAtTime }; todo
-            var valueRow = new Value { /*ValueID is identity_val*/ Scope = valueRow_Scope, Val = valueRow_Value, SetByUserID = valueRow_SetByUserID, SetAtTime = valueRow_SetAtTime };
-
-            db.Values.Add(valueRow);
-        }
-
-        //private void BuildCache()
-        //{
-        //    Cache cache = Cache.Instance;
-        //    cache.Initialize(db.Keys, db.Values);
-        //}
-    
+        #region Dispose
         private void Dispose(bool disposing)
         {
             if (!is_disposed)
@@ -316,8 +333,8 @@ namespace GameServerBLL
             }
             this.is_disposed = true;
         }
-  
-        public void Dispose( )
+
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -326,6 +343,7 @@ namespace GameServerBLL
         ~SimpleGameServerProvider()
         {
             Dispose(false);
-        }
+        } 
+        #endregion
     }
 }

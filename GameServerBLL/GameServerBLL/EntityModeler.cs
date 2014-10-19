@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using GameServerDAL;
 using GameServerDAL.Entities;
 
-using DALScope = GameServerDAL.Entities.KeyValueScope;
+using DALScope = GameServerDAL.KeyValueScope;
 
 namespace GameServerBLL
 {
+    // This Class is only for adding test data
+    // It should be deleted if adding test data is no longer required.
     public class EntityModeler : IDisposable
     {
         bool is_disposed = false;
@@ -72,10 +74,10 @@ namespace GameServerBLL
 
             var value7 = new Value { Val = "345", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 4 };
             var value8 = new Value { Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 7 };
-            var value9 = new Value { Val = "234", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 4, };
-            var value10 = new Value { Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 7 };
-            var value11 = new Value { Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 4 };
-            var value12 = new Value { Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 7 };
+            var value9 = new Value { Val = "234", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -2, Key4ID = 4, };
+            var value10 = new Value { Val = "Mark", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -2, Key4ID = 7 };
+            var value11 = new Value { Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -3, Key4ID = 4 };
+            var value12 = new Value { Val = "Luke", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -3, Key4ID = 7 };
 
             List<Value> valueList = new List<Value>() { value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12 };
             db.Values.AddRange(valueList);
@@ -85,21 +87,7 @@ namespace GameServerBLL
 
             // Build Cache
             Cache cache = Cache.Instance;
-            cache.Initialize(db.Keys, db.Values);
-        }
-
-        // add key row to Key table
-        public void AddKeyRow(string name)
-        {
-            var keyRow = new Key { Name = name }; // KeyID primary key is identity
-            db.Keys.Add(keyRow);
-            db.SaveChanges();
-        }
-
-        // TODO: Get the ID for the new key
-        public int GetIdForKeyPart(string keyPart)
-        {
-            return db.Keys.Where(keyRow => keyRow.Name.Equals(keyPart)).SingleOrDefault().KeyID;
+            cache.Initialize(db);
         }
 
         public List<string> ShowUsers()
@@ -118,19 +106,7 @@ namespace GameServerBLL
             return usersEmail;
         }
 
-        public int GetHashForFullKey(string fullKey)
-        {
-            return fullKey.GetHashCode();
-        }
-
-        //public void FindKeyForHash(int hashCode)
-        //{
-        //    Cache cache = Cache.Instance;
-        //    cache.Initialize(db.Keys, db.Values);
-
-        //    cache.FindKeyForHash(hashCode);
-        //}
-
+        #region Dispose
         protected virtual void Dispose(bool disposing)
         {
             if (!is_disposed)
@@ -143,7 +119,7 @@ namespace GameServerBLL
             this.is_disposed = true;
         }
 
-        public void Dispose( )
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -152,13 +128,7 @@ namespace GameServerBLL
         ~EntityModeler()
         {
             Dispose(false);
-        }
-
-        public void SaveChanges()
-        {
-            this.db.SaveChanges();
-        }
-
-
+        } 
+        #endregion
 	}
 }

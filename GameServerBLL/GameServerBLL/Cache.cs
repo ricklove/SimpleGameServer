@@ -4,12 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using GameServerDAL;
 using GameServerDAL.Entities;
 
 namespace GameServerBLL
 {
     sealed class Cache
     {
+        bool is_Initialized;
+        GameServerContext db;
+        private Dictionary<string, int> keyIdLookup;
+        private Dictionary<int, string> keyIdReverseLookup;
+
         private static readonly Cache instance = new Cache();
 
         static Cache()
@@ -21,8 +27,6 @@ namespace GameServerBLL
             is_Initialized = false;
             keyIdLookup = new Dictionary<string, int>();
             keyIdReverseLookup = new Dictionary<int,string>();
-
-            EntityModeler em = new EntityModeler();
         }
 
         public static Cache Instance
@@ -33,21 +37,19 @@ namespace GameServerBLL
             }
         }
 
-        bool is_Initialized;
-        EntityModeler em;
-        private Dictionary<string, int> keyIdLookup;
-        private Dictionary<int, string> keyIdReverseLookup;
-        private string strFullKey;
-
-        public void Initialize(DbSet<Key> keys, DbSet<Value> values)
+        // This method is only for adding test data from Entity Modeler class
+        // It should be deleted along with field db if adding test data is no longer required.
+        public void Initialize(GameServerContext db)
         {
             if (!is_Initialized)
             {
                 is_Initialized = true;
+                this.db = db;
 
-                foreach (Key keyRow in keys)
+                foreach (Key keyRow in db.Keys)
                 {
                     keyIdLookup.Add(keyRow.Name, keyRow.KeyID);
+                    keyIdReverseLookup.Add(keyRow.KeyID, keyRow.Name);
                 }
             }
         }
@@ -63,51 +65,40 @@ namespace GameServerBLL
 
             if (!keyIdLookup.ContainsKey(keyPart))
             {
-                // Add to DB key
-                em.AddKeyRow(keyPart);
-                // Get the new ID for the new key
-                int keyID = em.GetIdForKeyPart(keyPart);
+                int keyID;
+                AddKeyRow(keyPart, out keyID); // Add to DB key and Get the new ID for the new key
+
                 // Add the mapping to the keyIDLookup and keyIDReverseLookup
                 keyIdLookup.Add(keyPart, keyID);
+                keyIdReverseLookup.Add(keyID, keyPart);
             }
 
             return keyIdLookup[keyPart];
         }
 
-        public void FindKeyForHash(int hashCode)
+        public string LookupKeyID(int? keyID)
         {
-            //var matches = keyHashLookup[hashCode];
-        }
-
-        private void GetKeyAncestry(Key keyData, List<Key> keyList)
-        {
-            //keyList.Add(keyData);
-
-            //if (keyData.ParentID == null)
-            //    keyList.Reverse();
-            //else
-            //    GetKeyAncestry(Keys.Find(keyData.ParentID), keyList);
-
-        }
-
-        private string GetFullkey(Key keyData, List<string> fullKey)
-        {
-            fullKey.Add(keyData.Name);
-
-            //if (keyData.ParentID == null)
-            if (6 == 9) //todo
+            if (!keyID.HasValue)
             {
-                fullKey.Reverse();
-                strFullKey = String.Join(".", fullKey);
-                return strFullKey;
+                return "";
             }
-            else
-            {
-                //GetFullkey(Keys.Find(keyData.ParentID), fullKey); todo
 
+            if (keyID < 0)
+            {
+                return "" + -keyID.Value;
             }
-            return strFullKey;
+
+            return keyIdReverseLookup[keyID.Value];
         }
 
+        // add key row to Key table
+        private void AddKeyRow(string name, out int KeyID)
+        {
+            var keyRow = new Key { Name = name }; // KeyID primary key is identity
+            db.Keys.Add(keyRow);
+            db.SaveChanges();
+
+            KeyID = keyRow.KeyID;
+        }
     }
 }
