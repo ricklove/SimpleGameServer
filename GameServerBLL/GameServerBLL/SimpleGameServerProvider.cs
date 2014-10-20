@@ -47,7 +47,6 @@ namespace GameServerBLL
         }
 
         #region ISimpleGameServer Interface Methods
-
         // Login Methods
         public bool Register(string email, string password)
         {
@@ -139,8 +138,7 @@ namespace GameServerBLL
             return userSessionToken;
         }
 
-
-        // Key Value Storage
+        // Key-Value Storage Methods
         public void SetValue(Guid sessionToken, KeyValueScope scope, string key, string value)
         {
             int?[] keyPartIDs = GetKeyPartIDs(key);
@@ -209,7 +207,9 @@ namespace GameServerBLL
                 return String.Empty;
   
         }
+        #endregion
 
+        #region Key-Value Storage helper methods
         private Value GetValueRow(int?[] keyPartIDs)
         {
             int? keyPartID_0 = keyPartIDs[0];
@@ -279,20 +279,6 @@ namespace GameServerBLL
             return valRow;
         }
 
-        public string GetKeyString(Value value)
-        {
-            StringBuilder text = new StringBuilder();
-
-            foreach (var id in value.KeyIDs)
-            {
-                text.Append(cache.LookupKeyID(id) + ".");
-            }
-
-            return text.ToString().TrimEnd('.');
-        }
-
-        #endregion
-
         private int?[] GetKeyPartIDs(string key)
         {
             string[] keyParts = key.Trim().Split('.');
@@ -308,18 +294,49 @@ namespace GameServerBLL
             return keyPartIDs;
         }
 
-        public int GetUserIdForSession(Guid sessionToken)
+        private int GetUserIdForSession(Guid sessionToken)
         {
             return db.UserSessions.Where(s => s.UserSessionToken == sessionToken).SingleOrDefault().UserID;
         }
 
+        public string GetKeyString(Value value)
+        {
+            StringBuilder text = new StringBuilder();
+
+            foreach (var id in value.KeyIDs)
+            {
+                text.Append(cache.LookupKeyID(id) + ".");
+            }
+
+            return text.ToString().TrimEnd('.');
+        }
+        #endregion
+
+        #region Login-register helper Methods
         private IQueryable<string> AllUsersEmail()
         {
             var query = from u in db.Users
                         select u.Email;
 
             return query;
+        } 
+
+        public List<string> ShowUsers()
+        {
+            List<string> usersEmail = new List<string>();
+
+            var query = from u in db.Users
+                        orderby u.Email
+                        select u;
+
+            foreach (var item in query)
+            {
+                usersEmail.Add(item.Email);
+            }
+
+            return usersEmail;
         }
+        #endregion
 
         #region Dispose
         private void Dispose(bool disposing)

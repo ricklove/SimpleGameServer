@@ -25,6 +25,7 @@ namespace GameServerBLL
         private Cache()
         {
             is_Initialized = false;
+            db = GameServerContext.Instance;
             keyIdLookup = new Dictionary<string, int>();
             keyIdReverseLookup = new Dictionary<int,string>();
         }
@@ -37,14 +38,13 @@ namespace GameServerBLL
             }
         }
 
-        // This method is only for adding test data from Entity Modeler class
+        // This method is only for adding test data from Entity Modeler class and then sync db and cache
         // It should be deleted along with field db if adding test data is no longer required.
-        public void Initialize(GameServerContext db)
+        public void Initialize()
         {
             if (!is_Initialized)
             {
                 is_Initialized = true;
-                this.db = db;
 
                 foreach (Key keyRow in db.Keys)
                 {

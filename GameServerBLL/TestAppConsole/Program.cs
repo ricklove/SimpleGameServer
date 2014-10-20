@@ -19,6 +19,8 @@ namespace TestAppConsole
     {
         static void Main(string[] args)
         {
+            SimpleGameServerProvider provider = SimpleGameServerProvider.Instance;
+
             EntityModeler em = new EntityModeler();
             em.AddTestData();
 
@@ -29,15 +31,14 @@ namespace TestAppConsole
             else
                 Console.WriteLine("Some or all tests for Register Login failed \n");
 
-            List<string> usersEmail = em.ShowUsers();
-
+            List<string> usersEmail = provider.ShowUsers();
             Console.WriteLine("All users emails in the database:");
             foreach (var item in usersEmail)
             {
                 Console.WriteLine(item);
             }
 
-            SimpleGameServerProvider provider = SimpleGameServerProvider.Instance;
+            // register a user
             provider.Register("faqiraamir@gamil.com", "pass1234");
 
             bool IsSuccess;
@@ -58,12 +59,13 @@ namespace TestAppConsole
             {
                 // test key-value storage
                 em.AddTestDataKeyValue();
-                bool testsResult = Run_KeyValueTests();
+                bool testsResult = Run_KeyValueTests(userSessionToken);
 
                 if (testsResult)
                     Console.WriteLine("\n All tests for key-value storage passed");
                 else
                     Console.WriteLine("\n Some or all tests for key-value storage failed");
+
 
                 // add key value through provider // "TOLD.Players.4.PlayeID";
                 string key = "TOLD.Players.4.PlayerID";
@@ -79,16 +81,6 @@ namespace TestAppConsole
                 else
                     Console.WriteLine("Retrieval Invalid");
 
-                // Test to look Up using Full key
-                //provider.BuildCache();
-
-                //string fullKey = "TOLD.MyGame.HighScores.1.PlayerID";
-                //int hashCodeFullKey = em.GetHashForFullKey(fullKey);
-
-                //em.FindKeyForHash(hashCodeFullKey);
-
-
-
                 Console.ReadLine();
             }
 
@@ -96,26 +88,31 @@ namespace TestAppConsole
             em.Dispose();
         }
 
-        static bool Run_KeyValueTests()
+        static bool Run_KeyValueTests(Guid userSessionToken)
         {
-            GameServerBLL.Tests.KeyValueTests test = new GameServerBLL.Tests.KeyValueTests();
-            test.key1_ShoulReturnValue_value1();
-            test.key2_ShoulReturnValue_value2();
-            test.key3_ShoulReturnValue_value3();
-            test.key4_ShoulReturnValue_value4();
+            GameServerBLL.Tests.KeyValueTests tests = new GameServerBLL.Tests.KeyValueTests(userSessionToken);
 
-            return test.AllTestPassed;
+            tests.key1_ShouldReturnValue_value1();
+            tests.key2_ShouldReturnValue_value2();
+            tests.key3_ShouldReturnValue_value3();
+            tests.key4_ShouldReturnValue_value4();
+            tests.nonExistingKey_ShouldReturnValue_EmptyString();
+            tests.existingValueSet_ShouldChangeValue_newValue();
+            tests.newKey_ShouldCreateKeyAndValue();
+
+            return tests.AllTestPassed;
         }
 
         static bool Run_ReisterLoginTests()
         {
-            GameServerBLL.Tests.RegisterTests test = new GameServerBLL.Tests.RegisterTests();
-            test.Register_IvalidEmail_Fails();
-            test.Register_NoPassword_Fails();
-            test.Register_ExistingEmail_Fails();
-            test.Register_ValidnewEmail_AndPassword_Succeeds();
+            GameServerBLL.Tests.RegisterTests tests = new GameServerBLL.Tests.RegisterTests();
 
-            return test.AllTestPassed;
+            tests.Register_IvalidEmail_Fails();
+            tests.Register_NoPassword_Fails();
+            tests.Register_ExistingEmail_Fails();
+            tests.Register_ValidnewEmail_AndPassword_Succeeds();
+
+            return tests.AllTestPassed;
         }
     }
 }

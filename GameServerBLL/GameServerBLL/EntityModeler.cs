@@ -87,23 +87,7 @@ namespace GameServerBLL
 
             // Build Cache
             Cache cache = Cache.Instance;
-            cache.Initialize(db);
-        }
-
-        public List<string> ShowUsers()
-        {
-            List<string> usersEmail = new List<string>();
-
-            var query = from u in db.Users
-                        orderby u.Email
-                        select u;
-
-            foreach (var item in query)
-            {
-                usersEmail.Add(item.Email);
-            }
-
-            return usersEmail;
+            cache.Initialize();
         }
 
         #region Dispose

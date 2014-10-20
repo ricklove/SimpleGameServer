@@ -12,6 +12,8 @@ namespace GameServerDAL.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Primary key 
         public int ValueID { get; set; }
+
+        [StringLength(256)]
         public string Val { get; set; } // member names cannot be the same as their enclosing type
         public int SetByUserID { get; set; }
         public DateTime SetAtTime { get; set; } //Timestamp
