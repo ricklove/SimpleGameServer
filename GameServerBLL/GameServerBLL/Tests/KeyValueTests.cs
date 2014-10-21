@@ -11,7 +11,7 @@ namespace GameServerBLL.Tests
     {
         public KeyValueTests(Guid userSessionToken)
         {
-            AllTestPassed = false;
+            AllTestPassed = true;
             this.userSessionToken = userSessionToken;
             provider = SimpleGameServerProvider.Instance;
         }
@@ -37,34 +37,39 @@ namespace GameServerBLL.Tests
         public void key1_ShouldReturnValue_value1()
         {
             string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key1);
-            AllTestPassed = value.Equals(value1);
+            if (!value.Equals(value1))
+                AllTestPassed = false;
         }
 
         public void key2_ShouldReturnValue_value2()
         {
             string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key2);
-            AllTestPassed = value.Equals(value2);
+            if (!value.Equals(value2))
+                AllTestPassed = false;
         }
 
 
         public void key3_ShouldReturnValue_value3()
         {
             string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key3);
-            AllTestPassed = value.Equals(value3);
+            if (!value.Equals(value3))
+                AllTestPassed = false;
         }
 
 
         public void key4_ShouldReturnValue_value4()
         {
             string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, key4);
-            AllTestPassed = value.Equals(value4);
+            if (!value.Equals(value4))
+                AllTestPassed = false;
         }
 
         // Call GetValue for a nonexistent key should return ""
         public void nonExistingKey_ShouldReturnValue_EmptyString()
         {
             string value = provider.GetValue(userSessionToken, KeyValueScope.Shared, nonExistingKey);
-            AllTestPassed = value.Equals(String.Empty);
+            if (!value.Equals(String.Empty))
+                AllTestPassed = false;
         }
 
         // Call SetValue should change the existing value (verify with GetValue)
@@ -75,7 +80,8 @@ namespace GameServerBLL.Tests
             string newValue = "9700";
             provider.SetValue(userSessionToken, KeyValueScope.Shared, keyForExistingValue, newValue);
             string out_newValue = provider.GetValue(userSessionToken, KeyValueScope.Shared, keyForExistingValue);
-            AllTestPassed = newValue.Equals(out_newValue);
+            if (!newValue.Equals(out_newValue))
+                AllTestPassed = false;
 
             //get back to original value after the test
             provider.SetValue(userSessionToken, KeyValueScope.Shared, keyForExistingValue, originalValue);
@@ -88,7 +94,8 @@ namespace GameServerBLL.Tests
             provider.SetValue(userSessionToken, GameServerBLL.KeyValueScope.Shared, newKey, value);
             string out_Value = provider.GetValue(userSessionToken, KeyValueScope.Shared, newKey);
 
-            AllTestPassed = value.Equals(out_Value);
+            if (!value.Equals(out_Value))
+                AllTestPassed = false;
         }
     }
 }
