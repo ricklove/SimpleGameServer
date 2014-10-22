@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 using GameServerDAL;
 using GameServerDAL.Entities;
 
+using DALScope = GameServerDAL.KeyValueScope;
+
 namespace GameServerBLL
 {
+    // This Class is only for adding test data
+    // It should be deleted if adding test data is no longer required.
     public class EntityModeler : IDisposable
     {
         bool is_disposed = false;
@@ -46,113 +50,47 @@ namespace GameServerBLL
         public void AddTestDataKeyValue()
         {
             // key table
-            var key1 = new Key { KeyID = 1, ParentID = null, Depth = 0, Name = "TOLD" };
-            var key2 = new Key { KeyID = 10, ParentID = 1, Depth = 1, Name = "MyGame" };
-            var key3 = new Key { KeyID = 100, ParentID = 10, Depth = 2, Name = "HighScores" };
-            var key4 = new Key { KeyID = 1000, ParentID = 100, Depth = 3, Name = "1" };
-            var key5 = new Key { KeyID = 10000, ParentID = 1000, Depth = 4, Name = "PlayerID" };
-            var key6 = new Key { KeyID = 10001, ParentID = 1000, Depth = 4, Name = "Score" };
+            var key1 = new Key { Name = "TOLD" }; // KeyID primary key is identity
+            var key2 = new Key { Name = "MyGame" };
+            var key3 = new Key { Name = "HighScores" };
+            var key4 = new Key { Name = "PlayerID" };
+            var key5 = new Key { Name = "Score" };
 
-            var key7 = new Key { KeyID = 1001, ParentID = 100, Depth = 3, Name = "2" };
-            var key8 = new Key { KeyID = 10010, ParentID = 1001, Depth = 4, Name = "PlayerID" };
-            var key9 = new Key { KeyID = 10011, ParentID = 1001, Depth = 4, Name = "Score" };
+            var key6 = new Key { Name = "Players" };
+            var key7 = new Key { Name = "PlayerName" };
 
-            var key10 = new Key { KeyID = 1002, ParentID = 100, Depth = 3, Name = "3" };
-            var key11 = new Key { KeyID = 10020, ParentID = 1002, Depth = 4, Name = "PlayerID" };
-            var key12 = new Key { KeyID = 10021, ParentID = 1002, Depth = 4, Name = "Score" };
+            List<Key> keyList = new List<Key>() { key1, key2, key3, key4, key5, key6, key7 };
+            db.Keys.AddRange(keyList);
 
-            var key13 = new Key { KeyID = 11, ParentID = 1, Depth = 1, Name = "Players" };
-            var key14 = new Key { KeyID = 110, ParentID = 11, Depth = 2, Name = "123" };
-            var key15 = new Key { KeyID = 1100, ParentID = 110, Depth = 3, Name = "PlayerName" };
+            // value table /*ValueID = 100,*/
+            var value1 = new Value { Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -1, Key5ID = 4 };
+            var value2 = new Value { Val = "9500", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -1, Key5ID = 5 };
 
-            var key16 = new Key { KeyID = 111, ParentID = 11, Depth = 2, Name = "234" };
-            var key17 = new Key { KeyID = 1110, ParentID = 111, Depth = 3, Name = "PlayerName" };
+            var value3 = new Value { Val = "234", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -2, Key5ID = 4 };
+            var value4 = new Value { Val = "9400", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -2, Key5ID = 5 };
 
-            var key18 = new Key { KeyID = 112, ParentID = 11, Depth = 2, Name = "345" };
-            var key19 = new Key { KeyID = 1120, ParentID = 112, Depth = 3, Name = "PlayerName" };
+            var value5 = new Value { Val = "345", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -3, Key5ID = 4 };
+            var value6 = new Value { Val = "9600", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 2, Key3ID = 3, Key4ID = -3, Key5ID = 5 };
 
-            db.Keys.Add(key1);
-            db.Keys.Add(key2);
-            db.Keys.Add(key3);
-            db.Keys.Add(key4);
-            db.Keys.Add(key5);
-            db.Keys.Add(key6);
-            db.Keys.Add(key7);
-            db.Keys.Add(key8);
-            db.Keys.Add(key9);
-            db.Keys.Add(key10);
+            var value7 = new Value { Val = "345", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 4 };
+            var value8 = new Value { Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-03 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -1, Key4ID = 7 };
+            var value9 = new Value { Val = "234", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -2, Key4ID = 4, };
+            var value10 = new Value { Val = "Mark", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-02 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -2, Key4ID = 7 };
+            var value11 = new Value { Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -3, Key4ID = 4 };
+            var value12 = new Value { Val = "Luke", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00"), Scope = DALScope.Shared, Key1ID = 1, Key2ID = 6, Key3ID = -3, Key4ID = 7 };
 
-            db.Keys.Add(key11);
-            db.Keys.Add(key12);
-            db.Keys.Add(key13);
-            db.Keys.Add(key14);
-            db.Keys.Add(key15);
-            db.Keys.Add(key16);
-            db.Keys.Add(key17);
-            db.Keys.Add(key18);
-            db.Keys.Add(key19);
+            List<Value> valueList = new List<Value>() { value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12 };
+            db.Values.AddRange(valueList);
 
-            // value table
-            var value1 = new Value { ValueID = 100, KeyID = 10000, Scope = KeyValueScope.Shared, Val = "123", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
-            var value2 = new Value { ValueID = 101, KeyID = 10001, Scope = KeyValueScope.Shared, Val = "9500", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
-
-            var value3 = new Value { ValueID = 102, KeyID = 10010, Scope = KeyValueScope.Shared, Val = "234", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
-            var value4 = new Value { ValueID = 103, KeyID = 10011, Scope = KeyValueScope.Shared, Val = "9400", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
-
-            var value5 = new Value { ValueID = 104, KeyID = 10020, Scope = KeyValueScope.Shared, Val = "345", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
-            var value6 = new Value { ValueID = 105, KeyID = 10021, Scope = KeyValueScope.Shared, Val = "9600", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
-
-            var value7 = new Value { ValueID = 106, KeyID = 1100, Scope = KeyValueScope.Shared, Val = "Matthew", SetByUserID = 1, SetAtTime = DateTime.Parse("2014-01-01 12:00") };
-            var value8 = new Value { ValueID = 107, KeyID = 1110, Scope = KeyValueScope.Shared, Val = "Mark", SetByUserID = 2, SetAtTime = DateTime.Parse("2014-01-02 12:00") };
-            var value9 = new Value { ValueID = 108, KeyID = 1120, Scope = KeyValueScope.Shared, Val = "Luke", SetByUserID = 3, SetAtTime = DateTime.Parse("2014-01-03 12:00") };
-
-            db.Values.Add(value1);
-            db.Values.Add(value2);
-            db.Values.Add(value3);
-            db.Values.Add(value4);
-            db.Values.Add(value5);
-            db.Values.Add(value6);
-            db.Values.Add(value7);
-            db.Values.Add(value8);
-            db.Values.Add(value9);
-
-
+            // save changes to DB
             db.SaveChanges();
+
+            // Build Cache
+            Cache cache = Cache.Instance;
+            cache.Initialize();
         }
 
-        public List<string> ShowUsers()
-        {
-            List<string> usersEmail = new List<string>();
-
-            var query = from u in db.Users
-                        orderby u.Email
-                        select u;
-
-            foreach (var item in query)
-            {
-                usersEmail.Add(item.Email);
-            }
-
-            return usersEmail;
-        }
-
-        public void DelteAllData()
-        {
-            //db.UserSessions.RemoveRange(db.UserSessions.Select(s=>s));
-            db.UserSessions.RemoveRange(db.UserSessions);
-            db.UserClients.RemoveRange(db.UserClients);
-            db.Users.RemoveRange(db.Users);
-            db.Keys.RemoveRange(db.Keys);
-            db.Values.RemoveRange(db.Values);
-
-            db.SaveChanges();
-        }
-
-        public void DeleteDB()
-        {
-            db.Database.Delete();
-        }
-
+        #region Dispose
         protected virtual void Dispose(bool disposing)
         {
             if (!is_disposed)
@@ -164,8 +102,8 @@ namespace GameServerBLL
             }
             this.is_disposed = true;
         }
-  
-        public void Dispose( )
+
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -174,7 +112,7 @@ namespace GameServerBLL
         ~EntityModeler()
         {
             Dispose(false);
-        }
-
+        } 
+        #endregion
 	}
 }

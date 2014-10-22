@@ -51,7 +51,9 @@
     <Compile Include="Entities\UserClient.cs" />
     <Compile Include="Entities\UserSession.cs" />
     <Compile Include="Entities\Value.cs" />
+    <Compile Include="Enumerations.cs" />
     <Compile Include="GameServerContext.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
