@@ -1,0 +1,57 @@
+Feature: Edit Player Name
+In Order to manipulate the player's Name
+As a Player
+I want to edit or Update the Player's Name
+
+Scenario: FAIL Without a valid session key
+    Given I have logged in to the game with my verified and correct credentials
+    And I have not started the game
+    And I have not been assigned with a unique seesion key
+    When I try to get or set a player name
+    Then I should not be able to edit the player's Name
+    And I should notified to start the game in order to edit the player's name
+
+Scenario: Get the player name
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to get a player name
+    Then I should be able to get the player's Name
+
+Scenario: Set the player name to a different name
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    And a I have a valid different Name for a player
+    When I try to set a player's name to a different name
+    Then I should be able to edit the player name to a different name
+    And I should notified that the player name has been updated with new valid name
+
+Scenario: Set the player name to the same name
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to set a player's name to the same name
+    Then the existing name should not be altered
+    And I should be notified that updating the player name to the same name is not allowed
+    And I should be notified that updating the player name to the same name is trivial
+
+Scenario: Set the player name to a blank name
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to set a player's name to a blank name
+    Then the existing name should not be altered
+    And I should be notified that updating the player name to the balnk name is not allowed
+
+Scenario: Set the player name to an invalid name
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to set a player's name to an invalid name
+    Then the existing name should not be altered
+    And I should be notified that updating the player name to invalid name is not allowed
+    
+    
+    
+    

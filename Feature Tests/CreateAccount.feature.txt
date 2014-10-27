@@ -1,0 +1,43 @@
+Feature: Create Account
+In Order to save my settings
+As a Player
+I want to have an account
+
+Scenario: Create an account
+    Given I do NOT have an account
+    And I have a valid email
+    When I enter my email and password
+    Then I should be notified that the account was created
+    And I should receive a verification email
+
+Scenario: Fail to create an existing Account
+    Given I have an account
+    When I enter my email and password
+    Then I should be notified that the account was NOT created
+
+Scenario: Verify an account email
+    Given I have an account
+    And the email has NOT been verified
+    When I verify the email
+    Then I should be notified that the email has been verified
+
+Scenario: Fail to verify a non-existent account
+    Given I do NOT have an account
+    When I verify the email
+    Then I should be notified that the email has NOT been verified
+
+Scenario: Fail to verify an already verified account
+    Given I have an account
+    And the email has already been verified
+    When I verify the email
+    Then I should be notified that the email has NOT been verified
+
+Scenario: Fail to create an an Account with InValid email
+    Given I do NOT have an account
+    When I enter invalid email and password
+    Then I should be notified that the account was not created
+
+Scenario: Fail to create an an Account with Balnk password
+    Given I do NOT have an account
+    When I enter valid email and balnk password
+    Then I should be notified that the account was not created
