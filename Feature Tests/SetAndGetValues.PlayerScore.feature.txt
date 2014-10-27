@@ -1,0 +1,41 @@
+Feature: Edit Player Score
+In Order manipulate the player's Score
+As a Player
+I want to edit or Update the Player's Score
+
+Scenario: FAIL Without a valid session key
+    Given I have logged in to the game with my verified and correct credentials
+    And I have not started the game
+    And I have not been assigned with a unique seesion key
+    When I try to get or set a player's score
+    Then I should not be able to edit the player's score
+    And I should notified to start the game in order to edit the player's name
+
+Scenario: Get the player's high score
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to get a player's high score
+    Then I should be able to get the the player's high score
+
+Scenario: Get the player's top 10 scores
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to get player's top 10 scores
+    Then I should be able to get the player's top 10 scores
+
+Scenario: Get the top 10 high scores for all players
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    When I try to Get the top 10 high scores for all players
+    Then I should be able to get the top 10 high scores for all players
+
+Scenario: Add a score for the player
+    Given I have logged in to the game with my verified and correct credentials
+    And I have started the game
+    And I have been assigned with a unique seesion key
+    And the player socore is 8400
+    When I try to add a score of 100 for the player
+    Then I should be able to get the score 8500 for the player

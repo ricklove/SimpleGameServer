@@ -1,0 +1,33 @@
+Feature: Login
+In Order to enter the Application
+As a Player
+I want to login to application
+
+Scenario: Login with With valid and verified Account
+    Given a Player has an account
+    When the Player enter his email and password
+    Then he should be logged in to the application
+    And he should be assigned with a client key
+
+Scenario: Login with no Account
+    Given a Player has no account
+    When the Player enter his email and password
+    Then he should not be logged in to the application
+    And he should not be assigned with a client key
+    But he should be notified to get Register first in order to play the game
+
+Scenario: Login with Un-verified Account
+    Given a Player has an account
+    And the Player email has NOT been verified
+    When the Player enter his email and password
+    Then he should not be logged in to the application
+    And he should not be assigned with a client key
+    And he should be notified that the email has NOT been verified
+    But he should be notified to get his email verified
+
+Scenario: Login with blank or InCorrect password
+    Given a Player has an account
+    When the Player enter his email and balnk or incorrect password
+    Then he should not be logged in to the application
+    And he should not be assigned with a client key
+    But he should be notified to enter correct credentials

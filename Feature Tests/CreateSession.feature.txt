@@ -1,0 +1,18 @@
+Feature: Create Session
+In Order to start a game for a player
+As a Player
+The Player should be assigned with a unique session
+
+Scenario: session With valid client key
+    Given a Player has logged in with his verified and correct credentials
+    And a valid Client key has been generated and assigned to him
+    When the Player starts the game
+    Then the Player should be assigned with a unique session
+    And the player should be notified that the game has been started
+
+Scenario: session Without a valid client key
+    Given a Player has logged in with his verified and correct credentials
+    But a valid Client key has not been generated and assigned to him
+    When the Player starts the game
+    Then the Player should not be assigned with a unique session
+    And the player should be notified that the game has not been started
